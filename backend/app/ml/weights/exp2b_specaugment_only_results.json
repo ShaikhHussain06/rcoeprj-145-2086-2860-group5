@@ -1,0 +1,11 @@
+{
+  "experiment": "exp2b_specaugment_only",
+  "roc_auc": 0.7266,
+  "optimal_threshold": 0.6408,
+  "sensitivity_at_optimal": 0.702,
+  "specificity_at_optimal": 0.6467,
+  "false_positives_at_optimal": 53,
+  "false_negatives_at_optimal": 45,
+  "sensitivity_at_default": 0.9073,
+  "specificity_at_default": 0.4133
+}

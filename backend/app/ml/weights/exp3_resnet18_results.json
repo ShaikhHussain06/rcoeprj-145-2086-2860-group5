@@ -1,0 +1,18 @@
+{
+  "experiment": "exp3_resnet18",
+  "model_type": "resnet18",
+  "roc_auc": 0.8041,
+  "optimal_threshold": 0.2636,
+  "sensitivity_at_optimal": 0.8278,
+  "specificity_at_optimal": 0.6333,
+  "false_positives_at_optimal": 55,
+  "false_negatives_at_optimal": 26,
+  "sensitivity_at_default": 0.6291,
+  "specificity_at_default": 0.7867,
+  "confusion_matrix_at_optimal": {
+    "true_positive": 125,
+    "true_negative": 95,
+    "false_positive": 55,
+    "false_negative": 26
+  }
+}

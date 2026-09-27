@@ -1,0 +1,11 @@
+{
+  "experiment": "exp2a_focal_only",
+  "roc_auc": 0.7372,
+  "optimal_threshold": 0.5832,
+  "sensitivity_at_optimal": 0.7815,
+  "specificity_at_optimal": 0.6133,
+  "false_positives_at_optimal": 58,
+  "false_negatives_at_optimal": 33,
+  "sensitivity_at_default": 0.947,
+  "specificity_at_default": 0.38
+}

@@ -1,0 +1,15 @@
+{
+  "roc_auc": 0.6988,
+  "optimal_threshold": 0.5395,
+  "sensitivity_at_optimal": 0.7815,
+  "specificity_at_optimal": 0.58,
+  "sensitivity_at_default": 0.947,
+  "specificity_at_default": 0.3733,
+  "confusion_matrix_at_optimal": {
+    "true_positive": 118,
+    "true_negative": 87,
+    "false_positive": 63,
+    "false_negative": 33
+  },
+  "total_evaluated_samples": 301
+}
