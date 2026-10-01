@@ -1,0 +1,28 @@
+# Core ML & Deep Learning
+torch>=2.2.0
+torchaudio>=2.2.0
+torchvision>=0.17.0
+scikit-learn>=1.4.0
+
+# Audio & Signal Processing (DSP)
+librosa>=0.10.1
+scipy>=1.12.0
+soundfile>=0.12.1
+numpy>=1.26.0
+
+# Backend API & Server
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+python-multipart>=0.0.9
+pydantic>=2.6.0
+pydantic-settings>=2.2.0
+
+# Database & Storage
+sqlalchemy>=2.0.28
+aiosqlite>=0.20.0
+
+# Utilities & Visualization
+matplotlib>=3.8.0
+seaborn>=0.13.0
+httpx>=0.27.0
+pytest>=8.1.0
