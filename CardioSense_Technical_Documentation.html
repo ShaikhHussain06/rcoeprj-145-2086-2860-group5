@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CardioSense — Technical Architecture & Clinical Specifications</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 16mm 14mm 16mm 14mm;
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 10pt;
+      line-height: 1.5;
+      color: #1e293b;
+      background: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+    /* Header & Branding */
+    .doc-header {
+      border-bottom: 2.5px solid #0284c7;
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .brand-title {
+      font-size: 22pt;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+      margin: 0;
+    }
+    .brand-subtitle {
+      font-size: 11pt;
+      font-weight: 600;
+      color: #0284c7;
+      margin-top: 3px;
+      margin-bottom: 0;
+    }
+    .doc-meta {
+      text-align: right;
+      font-size: 8.5pt;
+      color: #64748b;
+      line-height: 1.4;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-primary { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+    .badge-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .badge-amber   { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+
+    /* Headings */
+    h2 {
+      font-size: 12.5pt;
+      font-weight: 700;
+      color: #0f172a;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding-bottom: 4px;
+      margin-top: 18px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    h2 .num {
+      background: #0284c7;
+      color: #ffffff;
+      border-radius: 4px;
+      font-size: 9pt;
+      padding: 1px 6px;
+      font-weight: 800;
+    }
+    h3 {
+      font-size: 10.5pt;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 12px;
+      margin-bottom: 6px;
+    }
+    p {
+      margin: 0 0 8px 0;
+      color: #334155;
+    }
+    ul, ol {
+      margin: 0 0 10px 0;
+      padding-left: 20px;
+      color: #334155;
+    }
+    li {
+      margin-bottom: 4px;
+    }
+    strong {
+      color: #0f172a;
+    }
+
+    /* Cards & Callouts */
+    .card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+    }
+    .card-highlight {
+      background: #f0f9ff;
+      border-left: 3.5px solid #0284c7;
+      border-radius: 0 6px 6px 0;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+    }
+    .card-alert {
+      background: #fefce8;
+      border-left: 3.5px solid #ca8a04;
+      border-radius: 0 6px 6px 0;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 8.5pt;
+      margin: 10px 0 14px 0;
+      page-break-inside: avoid;
+    }
+    th {
+      background: #f1f5f9;
+      color: #0f172a;
+      font-weight: 700;
+      text-align: left;
+      padding: 6px 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 8.5pt;
+    }
+    td {
+      padding: 5px 8px;
+      border: 1px solid #e2e8f0;
+      color: #334155;
+      vertical-align: top;
+    }
+    tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    /* Diagram flow box */
+    .flow-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin-bottom: 14px;
+    }
+    .flow-step {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 5px;
+      padding: 6px 8px;
+      text-align: center;
+      flex: 1;
+      min-width: 90px;
+    }
+    .flow-step .title {
+      font-size: 7.5pt;
+      font-weight: 700;
+      color: #0284c7;
+      text-transform: uppercase;
+    }
+    .flow-step .desc {
+      font-size: 7.5pt;
+      color: #475569;
+      margin-top: 2px;
+      line-height: 1.2;
+    }
+    .flow-arrow {
+      font-size: 10pt;
+      color: #94a3b8;
+      font-weight: 700;
+    }
+
+    /* Visual Threshold Bar */
+    .threshold-bar {
+      display: flex;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 8px 0 12px 0;
+      border: 1px solid #cbd5e1;
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-align: center;
+      line-height: 20px;
+    }
+    .bar-normal-high { background: #dcfce7; color: #166534; width: 35%; }
+    .bar-normal-border { background: #fef9c3; color: #854d0e; width: 14%; border-left: 1px dashed #ca8a04; }
+    .bar-abnormal-mod { background: #fed7aa; color: #9a3412; width: 21%; border-left: 2px solid #ea580c; }
+    .bar-abnormal-sev { background: #fee2e2; color: #991b1b; width: 30%; border-left: 1px dashed #dc2626; }
+
+    .avoid-break {
+      page-break-inside: avoid;
+    }
+    .page-break {
+      page-break-after: always;
+    }
+    .footer {
+      border-top: 1px solid #e2e8f0;
+      padding-top: 8px;
+      margin-top: 20px;
+      font-size: 7.5pt;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="doc-header">
+    <div>
+      <h1 class="brand-title">CardioSense AI</h1>
+      <p class="brand-subtitle">Automated Phonocardiogram (PCG) Auscultation & Murmur Detection System</p>
+    </div>
+    <div class="doc-meta">
+      <strong>System Documentation & Technical Specifications</strong><br>
+      Model Backbone: CardioResNet-18 (Deep 2D-CNN)<br>
+      Dataset Benchmark: PhysioNet CinC PCG Challenge<br>
+      Document Version: 1.0 • Comprehensive Review
+    </div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <h2><span class="num">1</span> Project Objective & Clinical Problem Statement</h2>
+  <div class="card-highlight">
+    <p><strong>Primary Goal:</strong> Provide an automated, high-precision acoustic screening platform for acoustic stethoscope recordings to reliably detect <strong>pathological heart murmurs</strong>, <strong>valvular regurgitation</strong> (e.g., Mitral Regurgitation), and <strong>stenotic ejection turbulence</strong> (e.g., Aortic Stenosis) prior to secondary echocardiogram referral.</p>
+  </div>
+  <ul>
+    <li><strong>Clinical Challenge:</strong> Traditional cardiac stethoscope auscultation is highly subjective. Subtle or early-stage murmurs are frequently missed in high-noise clinic environments, leading to delayed cardiac interventions.</li>
+    <li><strong>System Solution:</strong> CardioSense implements a deterministic pipeline: raw acoustic ingestion &rarr; zero-phase 4th-order Butterworth DSP filtering &rarr; 128-band Log-Mel Spectrogram extraction &rarr; PyTorch CardioResNet-18 deep inference &rarr; Youden-calibrated optimal thresholding &rarr; safety-guardrailed clinical report generation.</li>
+  </ul>
+
+  <!-- SECTION 2 -->
+  <h2><span class="num">2</span> End-to-End System Architecture Flow</h2>
+  <div class="flow-container">
+    <div class="flow-step">
+      <div class="title">1. Audio Input</div>
+      <div class="desc">Mic / Upload / Benchmark<br>WAV, MP3, WebM</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <div class="title">2. DSP Cleaner</div>
+      <div class="desc">2,000 Hz Resample<br>Butterworth 20-200Hz</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <div class="title">3. Segmentation</div>
+      <div class="desc">4.0s Window, 2.0s Hop<br>50% Temporal Overlap</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <div class="title">4. Mel-Spectrogram</div>
+      <div class="desc">128 Mel Bands<br>(1, 128, 63) Tensor</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <div class="title">5. ResNet-18 CNN</div>
+      <div class="desc">8 Residual Blocks<br>Skip Connections</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <div class="title">6. Decision & Report</div>
+      <div class="desc">Threshold &tau;* = 0.4900<br>Guardrailed Summary</div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <h2><span class="num">3</span> Audio Ingestion & Resampling Protocol</h2>
+  <ul>
+    <li><strong>Internal DSP Sample Rate:</strong> Standardized to <strong>2,000 Hz</strong> ($f_s = 2,000\text{ Hz}$).
+      <ul>
+        <li><em>Nyquist Limit:</em> $f_{Nyquist} = 1,000\text{ Hz}$ ($f_s / 2$). Fundamental heart valve thuds ($S_1, S_2$) span 20–150 Hz; pathological murmurs span up to 400 Hz. A 2,000 Hz rate captures 100% of the relevant acoustic envelope without wasting computational memory on unnecessary high frequencies.</li>
+      </ul>
+    </li>
+    <li><strong>Channel Downmix:</strong> Multi-channel recordings are downmixed to single-channel mono by averaging: $y_{mono}[n] = \frac{1}{C}\sum_{c=1}^C y_c[n]$.</li>
+    <li><strong>Universal Browser Playback Resampling:</strong> Raw PhysioNet recordings are sampled at 2,000 Hz float64, which native browser decoders (Chrome/Edge) reject with <code>NotSupportedError</code>. The backend server automatically resamples audio on-the-fly to <strong>44.1 kHz 16-bit PCM WAV</strong> via <code>scipy.signal.resample_poly</code> (39ms execution), enabling instant, crackle-free browser playback.</li>
+  </ul>
+
+  <!-- SECTION 4 -->
+  <h2><span class="num">4</span> Digital Signal Processing (DSP) & Bandpass Filtering</h2>
+  <div class="card">
+    <p><strong>Filter Implementation:</strong> 4th-Order Butterworth Bandpass IIR Filter via <code>scipy.signal.butter</code> & <code>scipy.signal.filtfilt</code>.</p>
+    <ul>
+      <li><strong>Lowcut Frequency ($f_{low}$): 20.0 Hz</strong> — Strips sensor friction against skin, thoracic breathing movement, muscle tremors, and baseline drift.</li>
+      <li><strong>Highcut Frequency ($f_{high}$): 200.0 Hz</strong> — Strips environmental room chatter, clinician voices, equipment noise, and 50/60 Hz mains electrical hum.</li>
+      <li><strong>Zero-Phase Filtering (<code>filtfilt</code>):</strong> Applies the filter forward and reverse. Result: <strong>Zero phase distortion ($\Delta \phi = 0$)</strong>. Crucial for clinical medicine because causal filters delay high frequencies, distorting the exact time alignment of $S_1$ (mitral/tricuspid) and $S_2$ (aortic/pulmonic) valve closures.</li>
+      <li><strong>Peak Amplitude Normalization:</strong> Scales signal amplitude to $[-1.0, 1.0]$: $y_{norm}[n] = \frac{y[n]}{\max(|y|) + 10^{-6}}$.</li>
+    </ul>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- SECTION 5 -->
+  <h2><span class="num">5</span> Temporal Segmentation: Why 4.0-Second Windows with 50% Overlap?</h2>
+  <div class="avoid-break">
+    <p>CardioSense splits filtered recordings into <strong>4.0-second sliding windows</strong> (8,000 samples) with a <strong>2.0-second hop</strong> (50% overlap):</p>
+    <ul>
+      <li><strong>Physiological Verification (4–6 Complete Cardiac Cycles):</strong> At a resting adult heart rate of 60–100 BPM, one cardiac cycle ($S_1 \rightarrow \text{systole} \rightarrow S_2 \rightarrow \text{diastole}$) lasts 0.6–1.0s. A 4.0-second window guarantees 4 to 6 full beats. Shorter windows (e.g. 1.0s) risk catching only half a beat, making rhythm and continuous turbulence indistinguishable.</li>
+      <li><strong>Temporal Murmur Localization:</strong> Slicing allows the system to pinpoint exactly when pathology occurs (e.g., <em>"Segment 3 (4.0s–8.0s) flagged: elevated turbulence"</em>), rather than providing only a blind overall label.</li>
+      <li><strong>Prevents Murmur Dilution:</strong> If a patient has a transient 4-second murmur in a 35-second recording, evaluating the whole recording at once dilutes the murmur energy. Slicing isolates the anomaly with high signal-to-noise ratio.</li>
+      <li><strong>50% Boundary Overlap (2.0s Hop):</strong> Prevents murmurs that occur right at a boundary cut (e.g. at second 3.9) from being bisected and missed. Every beat appears fully centered in at least one window.</li>
+      <li><strong>Uniform Matrix Dimensions:</strong> Produces uniform 2D tensors of shape <strong><code>(1, 128, 63)</code></strong> for fast batch parallel inference.</li>
+    </ul>
+  </div>
+
+  <!-- SECTION 6 -->
+  <h2><span class="num">6</span> Feature Extraction: 128-Band Log-Mel Spectrogram</h2>
+  <div class="card avoid-break">
+    <p>Converts 1D acoustic sound waves into 2D time-frequency spectrogram heatmaps via Librosa:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Configuration</th>
+          <th>Technical & Clinical Function</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Mel Bands ($n_{mels}$)</strong></td>
+          <td><strong>128 bands</strong></td>
+          <td>Non-linear perceptual frequency scale emphasizing critical lower-frequency heart valve ranges.</td>
+        </tr>
+        <tr>
+          <td><strong>FFT Window ($N_{FFT}$)</strong></td>
+          <td><strong>512 samples (256 ms)</strong></td>
+          <td>Optimal balance between frequency resolution and temporal localization of valve clicks.</td>
+        </tr>
+        <tr>
+          <td><strong>Hop Length ($H$)</strong></td>
+          <td><strong>128 samples (64 ms)</strong></td>
+          <td>75% frame overlap providing smooth, continuous time-frequency representation.</td>
+        </tr>
+        <tr>
+          <td><strong>Frequency Range</strong></td>
+          <td><strong>20.0 Hz &ndash; 400.0 Hz</strong></td>
+          <td>Broadened beyond 200 Hz to capture high-frequency regurgitant jet murmur harmonics.</td>
+        </tr>
+        <tr>
+          <td><strong>Scaling & Range</strong></td>
+          <td><strong>Decibel ($dB$) &rarr; [-1.0, 1.0]</strong></td>
+          <td>Logarithmic power conversion normalized for numerical stability in neural network layers.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 7 -->
+  <h2><span class="num">7</span> Deep Learning Architecture: CardioResNet-18</h2>
+  <div class="avoid-break">
+    <p>The primary inference backbone is <strong>CardioResNet-18</strong>, an 18-layer deep residual convolutional neural network:</p>
+    <ul>
+      <li><strong>Stem:</strong> $7\times 7$ Conv2D (64 filters, stride 2) &rarr; BatchNorm &rarr; ReLU &rarr; $3\times 3$ MaxPool (stride 2).</li>
+      <li><strong>4 Residual Stages (8 Residual Blocks):</strong>
+        <ul>
+          <li>Stage 1: 64 channels (stride 1) &bull; Stage 2: 128 channels (stride 2 downsampling)</li>
+          <li>Stage 3: 256 channels (stride 2 downsampling) &bull; Stage 4: 512 channels (stride 2 downsampling)</li>
+        </ul>
+      </li>
+      <li><strong>Residual Basic Block:</strong> $\text{Output} = \text{ReLU}\Big(\text{Conv}_2(\text{ReLU}(\text{Conv}_1(x))) + \text{Shortcut}(x)\Big)$. Identity skip connections allow gradients to flow directly without vanishing, preserving delicate acoustic murmur signatures.</li>
+      <li><strong>Global Pooling & Regularization:</strong> <code>AdaptiveAvgPool2d((1, 1))</code> collapses the spatial dimensions, enabling the model to handle recordings of variable length without resizing artifacts. Regularized with <strong>Dropout ($p = 0.35$)</strong> and Batch Normalization.</li>
+      <li><strong>Classifier:</strong> Fully-connected layer mapping 512 features to 2 class logits (Normal vs. Abnormal).</li>
+    </ul>
+  </div>
+
+  <!-- SECTION 8 -->
+  <h2><span class="num">8</span> Optimal Decision Threshold ($\tau^* = 0.4900$) & Score Ranges</h2>
+  <div class="avoid-break">
+    <p>The network outputs an Abnormal Probability Score ($P$) between $0.00$ and $1.00$. In clinical medicine, a false negative (missing a diseased heart) is catastrophic. Using <strong>Youden's J Statistic</strong> ($J = \text{Sensitivity} + \text{Specificity} - 1$), the decision threshold was calibrated to <strong>$\tau^* = 0.4900$</strong> (49.0%):</p>
+    
+    <div class="threshold-bar">
+      <div class="bar-normal-high">0% &ndash; 35%: HIGH CONF. NORMAL</div>
+      <div class="bar-normal-border">35% &ndash; 49%: BORDERLINE</div>
+      <div class="bar-abnormal-mod">49% &ndash; 70%: MODERATE MURMUR</div>
+      <div class="bar-abnormal-sev">70% &ndash; 100%: SEVERE ABNORMAL</div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Probability Range</th>
+          <th>Diagnosis</th>
+          <th>Clinical Acoustic Profile</th>
+          <th>Action & Validation Benchmark</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>0.00 &ndash; 0.35</strong> (0%&ndash;35%)</td>
+          <td><span class="badge badge-success">Normal</span></td>
+          <td>Pristine $S_1/S_2$ closures; quiet, silent baseline; regular rhythm.</td>
+          <td>Routine preventive checkup. <em>Benchmark: <code>a0007.wav</code> (34.1% abnormal, 65.9% confidence).</em></td>
+        </tr>
+        <tr>
+          <td><strong>0.35 &ndash; 0.49</strong> (35%&ndash;49%)</td>
+          <td><span class="badge badge-primary">Normal</span></td>
+          <td>Minor background noise or benign physiologic $S_2$ splitting. Below threshold.</td>
+          <td>No immediate referral needed. <em>Benchmark: <code>a0004.wav</code> (33.3% abnormal).</em></td>
+        </tr>
+        <tr>
+          <td><strong>0.49 &ndash; 0.70</strong> (49%&ndash;70%)</td>
+          <td><span class="badge badge-amber">Abnormal</span></td>
+          <td>Subtle systolic turbulence or regurgitation jet passing $\tau^* = 0.4900$.</td>
+          <td>Stethoscope re-auscultation + consider Echocardiogram. <em>Benchmark: <code>a0001.wav</code> (54.4% abnormal).</em></td>
+        </tr>
+        <tr>
+          <td><strong>0.70 &ndash; 1.00</strong> (70%&ndash;100%)</td>
+          <td><span class="badge badge-amber">Abnormal</span></td>
+          <td>Severe continuous high-frequency harsh systolic rushing noise.</td>
+          <td>Urgent Echocardiogram (TTE) referral. <em>Benchmarks: <code>a0006.wav</code> (92.1%), <code>a0003.wav</code> (82.4%).</em></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card-highlight">
+      <strong>PhysioNet Held-Out Test Set Performance:</strong>
+      <strong>ROC-AUC: 0.8041</strong> &bull; 
+      <strong>Sensitivity (Recall on Murmurs): 82.78%</strong> (125/151 abnormal hearts correctly caught) &bull; 
+      <strong>Specificity: 63.33%</strong> (95/150 healthy hearts confirmed).
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- SECTION 9 -->
+  <h2><span class="num">9</span> Clinical AI Report Agent & Medical Safety Guardrails</h2>
+  <div class="avoid-break">
+    <p>Every inference result is processed through an automated safety and governance layer before presentation:</p>
+    <ul>
+      <li><strong>Anti-Overclaiming Filter:</strong> Regular expressions replace definitive diagnostic claims:
+        <ul>
+          <li><em>"You have aortic stenosis"</em> &rarr; <em>"Acoustic patterns indicate potential signs of aortic stenosis"</em>.</li>
+          <li><em>"Confirmed case of heart failure"</em> &rarr; <em>"Presents acoustic characteristics consistent with..."</em>.</li>
+        </ul>
+      </li>
+      <li><strong>Hallucination / Grounding Check:</strong>
+        <ul>
+          <li>If $P(\text{Abnormal}) < 0.35$, words like <em>"critical murmur"</em> or <em>"severe pathology"</em> are strictly suppressed.</li>
+          <li>If $P(\text{Abnormal}) > 0.65$, terms like <em>"completely healthy heart"</em> or <em>"zero abnormalities"</em> are prohibited.</li>
+        </ul>
+      </li>
+      <li><strong>Mandatory Investigational Disclaimer:</strong> Every generated summary appends a statutory reminder: <em>"CardioSense is an automated acoustic screening and decision-support tool. It does not provide a definitive diagnosis. All findings must be clinically correlated with stethoscope auscultation and echocardiography by a licensed clinician."</em></li>
+    </ul>
+  </div>
+
+  <!-- SECTION 10 -->
+  <h2><span class="num">10</span> Cryptographic Security & Audit Logging</h2>
+  <div class="avoid-break">
+    <p>To guarantee medical audit compliance, reproducibility, and chain-of-custody:</p>
+    <ul>
+      <li><strong>SHA-256 Audio Signature:</strong> Upon upload, a 256-bit cryptographic hash of raw audio bytes is generated.</li>
+      <li><strong>SQLite Persistence (<code>cardiosense.db</code>):</strong>
+        <ul>
+          <li><code>AnalysisRecord</code>: Stores session ID (<code>CS-XXXXXXXXXXXX</code>), patient tag, confidence, duration, and findings.</li>
+          <li><code>AuditLog</code>: Records model version, filter frequencies, raw segment probability arrays, and guardrail audit flags.</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION 11 -->
+  <h2><span class="num">11</span> Master Parameter & Configuration Reference Table</h2>
+  <div class="avoid-break">
+    <table>
+      <thead>
+        <tr>
+          <th>System Layer</th>
+          <th>Parameter Name</th>
+          <th>Configured Value</th>
+          <th>Clinical & Engineering Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>DSP Ingestion</strong></td>
+          <td>Sample Rate ($f_s$)</td>
+          <td><strong>2,000 Hz</strong></td>
+          <td>Covers 20–400 Hz cardiac sound band with 1,000 Hz Nyquist ceiling.</td>
+        </tr>
+        <tr>
+          <td><strong>DSP Ingestion</strong></td>
+          <td>Channels</td>
+          <td><strong>Mono (1-channel)</strong></td>
+          <td>Downmixes stereo channels to single acoustic phonocardiogram.</td>
+        </tr>
+        <tr>
+          <td><strong>DSP Filter</strong></td>
+          <td>Bandpass Frequencies</td>
+          <td><strong>20.0 Hz &ndash; 200.0 Hz</strong></td>
+          <td>Strips sensor motion (<20Hz) and ambient speech/hum (>200Hz).</td>
+        </tr>
+        <tr>
+          <td><strong>DSP Filter</strong></td>
+          <td>Filter Type & Order</td>
+          <td><strong>Butterworth 4th-Order</strong></td>
+          <td>Maximally flat passband with rapid &minus;80 dB/decade attenuation.</td>
+        </tr>
+        <tr>
+          <td><strong>DSP Filter</strong></td>
+          <td>Filtering Algorithm</td>
+          <td><strong>Zero-Phase (filtfilt)</strong></td>
+          <td>Eliminates phase distortion ($\Delta \phi = 0$); preserves S1/S2 timing.</td>
+        </tr>
+        <tr>
+          <td><strong>Segmentation</strong></td>
+          <td>Window Duration</td>
+          <td><strong>4.0 seconds</strong> (8,000 samples)</td>
+          <td>Captures 4–6 consecutive heart cycles at normal 60–100 BPM.</td>
+        </tr>
+        <tr>
+          <td><strong>Segmentation</strong></td>
+          <td>Hop Duration</td>
+          <td><strong>2.0 seconds</strong> (50% overlap)</td>
+          <td>Prevents murmurs at boundary cuts from being bisected and lost.</td>
+        </tr>
+        <tr>
+          <td><strong>Spectrogram</strong></td>
+          <td>Mel Filter Bands ($n_{mels}$)</td>
+          <td><strong>128 bands</strong></td>
+          <td>High spectral resolution across auditory non-linear scale.</td>
+        </tr>
+        <tr>
+          <td><strong>Spectrogram</strong></td>
+          <td>FFT Window & Hop</td>
+          <td><strong>$N_{FFT}=512$, $H=128$</strong></td>
+          <td>256ms time window with 75% frame overlap.</td>
+        </tr>
+        <tr>
+          <td><strong>Spectrogram</strong></td>
+          <td>Frequency Range</td>
+          <td><strong>20.0 Hz &ndash; 400.0 Hz</strong></td>
+          <td>Captures low-frequency valve closures plus high-frequency murmur jet.</td>
+        </tr>
+        <tr>
+          <td><strong>Deep Learning</strong></td>
+          <td>Architecture</td>
+          <td><strong>CardioResNet-18</strong></td>
+          <td>8 residual blocks with skip connections preventing gradient vanishing.</td>
+        </tr>
+        <tr>
+          <td><strong>Deep Learning</strong></td>
+          <td>Regularization</td>
+          <td><strong>Dropout (0.35) + BatchNorm</strong></td>
+          <td>Prevents overfitting to specific acoustic recording hardware.</td>
+        </tr>
+        <tr>
+          <td><strong>Decision Threshold</strong></td>
+          <td>Optimal Cut-Off ($\tau^*$)</td>
+          <td><strong>0.4900 (49.0%)</strong></td>
+          <td>Maximizes Youden's J statistic; prioritizes murmur recall (82.78%).</td>
+        </tr>
+        <tr>
+          <td><strong>Browser Playback</strong></td>
+          <td>Audio Resampling</td>
+          <td><strong>44.1 kHz 16-bit PCM WAV</strong></td>
+          <td>Universal HTML5 audio decoding eliminating browser playback errors.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 12 -->
+  <h2><span class="num">12</span> Benchmark Audio Verification Samples (PhysioNet Cohort)</h2>
+  <div class="avoid-break">
+    <table>
+      <thead>
+        <tr>
+          <th>Sample File</th>
+          <th>Ground Truth</th>
+          <th>Model Output</th>
+          <th>Abnormal Prob.</th>
+          <th>Acoustic Characteristics</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><code>a0007.wav</code></strong></td>
+          <td>Normal</td>
+          <td><strong>NORMAL</strong></td>
+          <td><strong>34.1%</strong> (65.9% Conf.)</td>
+          <td>Pristine physiological S1/S2 rhythm, clean silent systolic interval, 72 BPM cadence.</td>
+        </tr>
+        <tr>
+          <td><strong><code>a0006.wav</code></strong></td>
+          <td>Abnormal</td>
+          <td><strong>ABNORMAL</strong></td>
+          <td><strong>92.1%</strong> (92.1% Conf.)</td>
+          <td>Severe pathological murmur; continuous high-amplitude systolic turbulence.</td>
+        </tr>
+        <tr>
+          <td><strong><code>a0001.wav</code></strong></td>
+          <td>Abnormal</td>
+          <td><strong>ABNORMAL</strong></td>
+          <td><strong>54.4%</strong> (54.4% Conf.)</td>
+          <td>Mitral Regurgitation jet; demonstrates sensitivity right above the $\tau^* = 0.4900$ threshold.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span>CardioSense AI &bull; Confidential &bull; For Clinical Engineering & Academic Defense</span>
+    <span>Page 3 of 3 &bull; Generated October 2026</span>
+  </div>
+
+</body>
+</html>

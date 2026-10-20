@@ -1,5 +1,51 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { CardioSenseLogo, CardioSenseCardSymbol, ClinicalBadgeGraphic } from './CardioSenseLogo';
+
+function TypewriterText({
+  words = ['CardioSense AI', 'Acoustic AI', 'CardioSense AI'],
+  typingSpeed = 110,
+  deletingSpeed = 60,
+  pauseDuration = 2800
+}) {
+  const [text, setText] = useState('');
+  const [wordIndex, setWordIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentWord = words[wordIndex % words.length];
+
+    if (!isDeleting) {
+      if (text.length < currentWord.length) {
+        const timeout = setTimeout(() => {
+          setText(currentWord.slice(0, text.length + 1));
+        }, typingSpeed);
+        return () => clearTimeout(timeout);
+      } else {
+        const timeout = setTimeout(() => {
+          setIsDeleting(true);
+        }, pauseDuration);
+        return () => clearTimeout(timeout);
+      }
+    } else {
+      if (text.length > 0) {
+        const timeout = setTimeout(() => {
+          setText(currentWord.slice(0, text.length - 1));
+        }, deletingSpeed);
+        return () => clearTimeout(timeout);
+      } else {
+        setIsDeleting(false);
+        setWordIndex((prev) => (prev + 1) % words.length);
+      }
+    }
+  }, [text, isDeleting, wordIndex, words, typingSpeed, deletingSpeed, pauseDuration]);
+
+  return (
+    <span className="font-serif italic text-sky-600 font-normal inline-flex items-baseline">
+      <span>{text}</span>
+      <span className="text-sky-400 font-light ml-2 mr-1 select-none animate-pulse">/</span>
+    </span>
+  );
+}
 
 export default function LandingPage({ onLaunchStudio, onExploreDashboard, onExploreQA }) {
   return (
@@ -22,8 +68,7 @@ export default function LandingPage({ onLaunchStudio, onExploreDashboard, onExpl
 
               {/* Primary Headline */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl tracking-tight text-slate-900 font-bold leading-[1.15] mb-6">
-                <span className="font-serif italic text-sky-600 font-normal">CardioSense AI</span>
-                <span className="text-sky-400 font-light mx-2">/</span>
+                <TypewriterText words={['CardioSense AI', 'Acoustic AI', 'CardioSense AI']} />
                 <br className="hidden sm:inline"/>Every heartbeat tells a story.
               </h1>
 
