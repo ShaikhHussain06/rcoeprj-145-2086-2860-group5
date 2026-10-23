@@ -31,6 +31,16 @@ class InferenceEngine:
         self.model.eval()
 
         self.weights_loaded = False
+        if weights_path is None:
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            for c in [
+                os.path.join(base_dir, "weights", "exp3_resnet18.pt"),
+                os.path.join(base_dir, "weights", "cardiosense_cnn.pt"),
+            ]:
+                if os.path.exists(c):
+                    weights_path = c
+                    break
+
         if weights_path and os.path.exists(weights_path):
             try:
                 state_dict = torch.load(weights_path, map_location=self.device)

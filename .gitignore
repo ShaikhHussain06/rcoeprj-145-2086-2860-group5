@@ -22,6 +22,13 @@ data/training-*/
 frontend/node_modules/
 frontend/dist/
 
+# Mobile App (Expo / React Native)
+mobile/node_modules/
+mobile/.env
+mobile/.expo/
+mobile/dist/
+mobile/android/build/
+
 # Environment / secrets
 .env
 *.env

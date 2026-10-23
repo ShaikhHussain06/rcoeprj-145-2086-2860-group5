@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "CardioSense AI",
+    "slug": "cardiosense-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cardiosense.mobile",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "CardioSense requires microphone access to record and analyze phonocardiogram heart sounds."
+      }
+    },
+    "android": {
+      "package": "com.cardiosense.mobile",
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "usesCleartextTraffic": true
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "scheme": "cardiosense",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "c0035b97-8331-45de-88fa-5c60ae852ee8"
+      }
+    }
+  }
+}

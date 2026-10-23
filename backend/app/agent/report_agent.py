@@ -36,12 +36,17 @@ class ClinicalReportAgent:
                 f"No predominant pathological murmur turbulence was detected across the {len(segments)} analyzed segments."
             )
         else:
-            anom_indices = [str(s["segment_index"]) for s in anomalous_segments]
+            if anomalous_segments:
+                anom_indices = [str(s["segment_index"]) for s in anomalous_segments]
+                time_range = f"between {anomalous_segments[0]['start_time_sec']}s and {anomalous_segments[-1]['end_time_sec']}s"
+            else:
+                anom_indices = ["borderline murmur turbulence across cardiac windows"]
+                time_range = f"throughout the {duration:.1f}s recording"
+
             summary = (
                 f"Phonocardiogram recording of {duration:.1f}s exhibits irregular acoustic energy distribution "
                 f"with an abnormal classification confidence of {confidence*100:.1f}%. "
-                f"Elevated spectral turbulence was localized in segment(s): {', '.join(anom_indices)} "
-                f"(between {anomalous_segments[0]['start_time_sec']}s and {anomalous_segments[-1]['end_time_sec']}s)."
+                f"Elevated spectral turbulence was localized in segment(s): {', '.join(anom_indices)} ({time_range})."
             )
 
         # 2. Detailed Findings Breakdown

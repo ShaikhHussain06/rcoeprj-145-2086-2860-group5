@@ -149,6 +149,12 @@ npm install
 npm run dev
 ```
 
+### 3. Mobile App (`mobile/`)
+
+CardioSense Mobile is an Android/iOS cross-platform mobile client built with React Native and Expo. It brings cardiac auscultation screening and report generation to mobile devices.
+
+For complete prerequisites, environment setup, and instructions on running with Expo Go or building an APK, see the [Mobile Documentation](mobile/README.md).
+
 ---
 
 ## 🧪 Running Automated Tests
